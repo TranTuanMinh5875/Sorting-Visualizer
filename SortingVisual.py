@@ -131,101 +131,58 @@ def insertion_sort(draw_info, ascending=True):
 
 
 def merge_sort(draw_info, ascending=True):
-	lst = draw_info.lst
+    lst = draw_info.lst
 
-	yield from merge_sort_helper(draw_info, lst, 0, len(lst) - 1, ascending)
+    def merge_sort_helper(left, right):
+        if left >= right:
+            return
 
-	return lst
+        middle = (left + right) // 2
 
+        yield from merge_sort_helper(left, middle)
+        yield from merge_sort_helper(middle + 1, right)
 
-def merge_sort_helper(draw_info, lst, left, right, ascending):
-	if left >= right:
-		return
+        left_lst = lst[left:middle + 1]
+        right_lst = lst[middle + 1:right + 1]
 
-	middle = (left + right) // 2
+        left_index = 0
+        right_index = 0
+        list_index = left
 
-	yield from merge_sort_helper(draw_info, lst, left, middle, ascending)
-	yield from merge_sort_helper(draw_info, lst, middle + 1, right, ascending)
+        while left_index < len(left_lst) and right_index < len(right_lst):
+            left_num = left_lst[left_index]
+            right_num = right_lst[right_index]
 
-	left_lst = lst[left:middle + 1]
-	right_lst = lst[middle + 1:right + 1]
+            if (left_num <= right_num and ascending) or \
+               (left_num >= right_num and not ascending):
+                lst[list_index] = left_num
+                draw_list(draw_info, {list_index: draw_info.GREEN, left + left_index: draw_info.RED}, True)
+                left_index += 1
+            else:
+                lst[list_index] = right_num
+                draw_list(draw_info, {list_index: draw_info.GREEN, middle + 1 + right_index: draw_info.RED}, True)
+                right_index += 1
 
-	left_index = 0
-	right_index = 0
-	list_index = left
+            list_index += 1
+            yield True
 
-	while left_index < len(left_lst) and right_index < len(right_lst):
+        while left_index < len(left_lst):
+            lst[list_index] = left_lst[left_index]
+            draw_list(draw_info, {list_index: draw_info.GREEN, left + left_index: draw_info.RED}, True)
+            left_index += 1
+            list_index += 1
+            yield True
 
-		left_num = left_lst[left_index]
-		right_num = right_lst[right_index]
+        while right_index < len(right_lst):
+            lst[list_index] = right_lst[right_index]
+            draw_list(draw_info, {list_index: draw_info.GREEN, middle + 1 + right_index: draw_info.RED}, True)
+            right_index += 1
+            list_index += 1
+            yield True
 
-		if (left_num <= right_num and ascending) or \
-		   (left_num >= right_num and not ascending):
+    yield from merge_sort_helper(0, len(lst) - 1)
 
-			lst[list_index] = left_num
-
-			draw_list(
-				draw_info,
-				{
-					list_index: draw_info.GREEN,
-					left + left_index: draw_info.RED
-				},
-				True
-			)
-
-			left_index += 1
-
-		else:
-
-			lst[list_index] = right_num
-
-			draw_list(
-				draw_info,
-				{
-					list_index: draw_info.GREEN,
-					middle + 1 + right_index: draw_info.RED
-				},
-				True
-			)
-
-			right_index += 1
-
-		list_index += 1
-		yield True
-
-	while left_index < len(left_lst):
-
-		lst[list_index] = left_lst[left_index]
-
-		draw_list(
-			draw_info,
-			{
-				list_index: draw_info.GREEN,
-				left + left_index: draw_info.RED
-			},
-			True
-		)
-
-		left_index += 1
-		list_index += 1
-		yield True
-
-	while right_index < len(right_lst):
-
-		lst[list_index] = right_lst[right_index]
-
-		draw_list(
-			draw_info,
-			{
-				list_index: draw_info.GREEN,
-				middle + 1 + right_index: draw_info.RED
-			},
-			True
-		)
-
-		right_index += 1
-		list_index += 1
-		yield True
+    return lst
 
 
 def main():
